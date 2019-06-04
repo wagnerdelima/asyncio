@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from threading import Thread
 import os, time, datetime, random, tracemalloc
 
 tracemalloc.start()
@@ -23,6 +23,11 @@ def child(num):
 
 if __name__ == '__main__':
     print(f'Parent PID: {os.getpid()}')
+    threads = []
     for i in range(children):
-        proc = Process(target=child, args=(i,))
-        proc.start()
+        thread = Thread(target=child, args=(i,))
+        thread.start()
+        threads.append(thread)
+
+    for thread in threads:
+        thread.join()
