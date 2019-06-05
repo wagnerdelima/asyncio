@@ -1,8 +1,8 @@
 from multiprocessing import Process
-import os, time, datetime, random, tracemalloc
+import os, time, datetime, tracemalloc
 
 tracemalloc.start()
-children = 4
+children = 100
 maxdelay = 6
 
 
@@ -14,7 +14,7 @@ def status():
 
 
 def child(num):
-    delay = random.randrange(maxdelay)
+    delay = maxdelay
     print(f"{status()}\t\tProcess "
           f"{num}, PID: {os.getpid()}, Delay: {delay} seconds...")
     time.sleep(delay)
@@ -22,7 +22,17 @@ def child(num):
 
 
 if __name__ == '__main__':
+    start = time.time()
     print(f'Parent PID: {os.getpid()}')
+    processes = []
     for i in range(children):
         proc = Process(target=child, args=(i,))
         proc.start()
+
+        processes.append(proc)
+
+    for proc in processes:
+        proc.join()
+
+    end = time.time()
+    print(f'Slapsed time: {end-start}')
